@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: Project Showcase API
+  description: An API for managing and retrieving project information from the Showcase sheet.
+  version: 1.0.0
+
+paths:
+  /projects:
+    get:
+      summary: Retrieve a list of projects
+      description: Fetch all projects with their details, including partners, goals, and relevance.
+      responses:
+        '200':
+          description: A list of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+
+    post:
+      summary: Add a new project
+      description: Create a new project entry in the showcase.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          description: Project successfully created
+
+  /projects/{id}:
+    get:
+      summary: Retrieve project details
+      description: Fetch details of a specific project by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Details of the project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          description: Project not found
+
+  /projects/{id}/participants:
+    get:
+      summary: Retrieve project participant matrix
+      description: Fetch the number of participants in the project and their study areas.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Participant matrix retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantMatrix'
+        '404':
+          description: Project not found
+
+components:
+  schemas:
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the project
+        name:
+          type: string
+          description: Name of the project (Заголовок в таблице Название проекта)
+        hasCustomer:
+          type: boolean
+          description: Indicates if there is a customer (Заголовок в таблице Есть ли у проекта партнер/заказчик?)
+        customer:
+          type: string
+          description: Name of the customer  (Заголовок в таблице Укажите, кто является партнером/заказчиком)
+        decision:
+          type: boolean
+          description: Decision on the project admission (Заголовок в таблице Решение о допуске)
+        applicantStatus:
+          type: string
+          description: Status of the applicant (Заголовок в таблице Ваш статус)
+          enum:
+            - employee mospolytech
+            - employee anothe organisation
+            - student mospolytech
+        priority:
+          type: boolean
+          description: Indicates if the project is a priority (Заголовок в таблице Приоритетный проект)
+        priorityDirection:
+          type: string
+          description: Priority direction of the project within the university (Заголовок в таблице Приоритетное направление университета)
+        projectDirection:
+          type: string
+          description: Proposed field or category of the project (Заголовок в таблице Выберите предполагаемое направление проекта)
+          enum:
+            - Multimedia
+            - IT
+            - Transport
+            - ChemBioTech
+            - Engineering
+            - Health
+            - Education
+            - Environment
+            - Social
+            - Business
+        goal:
+          type: string
+          description: Goal of the project (Заголовок в таблице Цель)
+        relevance:
+          type: string
+          description: Explanation of the project's relevance (Заголовок в таблице Актуальность)
+        keyTasks:
+          type: string
+          description: Key tasks of the project  (Заголовок в таблице Ключевые задачи)
+        problems:
+          type: string
+          description: Problems addressed by the project  (Заголовок в таблице Проблематика)
+        expectedOutcome:
+          type: string
+          description: Expected product outcome of the project (Заголовок в таблице Ожидаемый продуктовый результат)
+
+
+    ParticipantMatrix:
+      type: object
+      properties:
+        projectId:
+          type: integer
+          description: ID of the project
+        participants:
+          type: array
+          description: List of study areas and participant counts
+          items:
+            type: object
+            properties:
+              studyArea:
+                type: string
+                description: Name of the study area
+              count:
+                type: integer
+                description: Number of participants in this study area
